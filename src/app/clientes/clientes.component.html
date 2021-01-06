@@ -1,0 +1,55 @@
+
+<detalle-cliente *ngIf="clienteSeleccionado" [cliente]="clienteSeleccionado"></detalle-cliente>
+
+<div class="card bg-light mb-3">
+  <div class="card-header">Clientes</div>
+  <div class="card-body">
+    <h5 class="card-title">Listado de clientes</h5>
+    <div class="my-2 text-left">
+      <button class="btn btn-primary" type="button" *ngIf="authService.hasRole('ROLE_ADMIN')" [routerLink]="['/clientes/form']">Crear Cliente</button>
+    </div>
+    <table class="table table-table-bordered table-table-striped" *ngIf="clientes?.length > 0 else elseBlock">
+      <thead>
+        <tr>
+          <th *ngIf="authService.hasRole('ROLE_USER')">#</th>
+          <th>nombre</th>
+          <th>apellido</th>
+          <th>email</th>
+          <th>fecha</th>
+          <th *ngIf="authService.hasRole('ROLE_ADMIN')">
+            editar
+          </th>
+          <th *ngIf="authService.hasRole('ROLE_ADMIN')">
+            eliminar
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of clientes">
+          <td *ngIf="authService.hasRole('ROLE_USER')">
+            <img *ngIf="cliente?.foto" (click)="abrirModal(cliente)" src="http://localhost:8080/api/uploads/img/{{cliente.foto}}"  style="width: 64px;cursor: pointer;" alt="foto" class="img-thumbnail rounded">
+            <img *ngIf="!cliente?.foto" (click)="abrirModal(cliente)" src="http://localhost:8080/images/no_usuario.png" style="width: 64px;cursor: pointer;" alt="foto" class="img-thumbnail rounded">
+          </td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.apellido }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.createAt }}</td>
+          <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <button type="button" class="btn btn-primary btn-sm" [routerLink]="['/clientes/form', cliente.id]">editar</button>
+          </td>
+          <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <button class="btn btn-danger btn-sm" (click)='delete(cliente)'>Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #elseBlock>
+      <div class="alert alert-info">
+        No hay registros en la base de datos!
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<nav-paginator *ngIf="paginador" [paginador]="paginador"></nav-paginator>
